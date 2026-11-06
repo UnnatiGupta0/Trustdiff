@@ -1,41 +1,73 @@
 # trustdiff
 
-Map personal data in your codebase and flag GDPR / DPDP gaps, in one command. Runs locally, zero dependencies, never reads `.env` files, uploads nothing.
+**Find the gap between what you tell customers about privacy and what your code actually does.**
+
+[![npm](https://img.shields.io/npm/v/trustdiff-cli)](https://www.npmjs.com/package/trustdiff-cli) ![license](https://img.shields.io/badge/license-MIT-blue) ![deps](https://img.shields.io/badge/dependencies-0-brightgreen) ![frameworks](https://img.shields.io/badge/maps%20to-GDPR%20%7C%20DPDP-purple)
 
 ```bash
-npx trustdiff-cli scan . --frameworks gdpr,dpdp
-# or, from this folder:
-node bin/trustdiff.js scan /path/to/repo --out report.md --json report.json
+npx trustdiff-cli scan .
 ```
 
-## What it finds (v0.1)
-- **Personal-data map**: email, phone, name, address, DOB, Aadhaar/PAN/passport, bank/UPI/card, health, location, credentials, device IDs, biometric, special categories, minors. Shows where each is *stored* vs just referenced.
-- **Personal data in logs**: `console.log`, `logger.*`, `logging.*`, `print` lines with PII or raw `req.body`.
-- **Personal data sent to third parties**: Mixpanel/Segment/PostHog/Sentry/LLM calls carrying raw identifiers.
-- **Sub-processor register**: analytics, monitoring, email, SMS, payments, LLMs, cloud (from package.json / requirements.txt / imports).
-- **Committed secrets**: AWS, Stripe, Razorpay, OpenAI/Anthropic, GitHub, Slack, Google, DB URLs, private keys (masked in report).
-- **Repo-level gaps**: no deletion/retention logic, unhashed passwords, unencrypted sensitive fields, tracking without consent, no monitoring (72h breach readiness), children's data, cross-border transfers.
-- **Questionnaire evidence**: draft answers to common security-questionnaire questions, each tagged code / ops / policy / certification.
+![trustdiff demo](docs/demo.svg)
 
-Each finding maps to GDPR articles and DPDP Act sections / Rules 2025.
+One command. Runs locally, zero dependencies, **never reads `.env` files, uploads nothing**.
 
-## Flags
-`--frameworks gdpr,dpdp` · `--out <file.md>` · `--json <file>` · `--ci` (exit 1 on any high finding)
+---
 
-## Demo
-`npm run demo` scans `examples/sample-app` (planted issues) → `examples/sample-report.md`.
+## Why this exists
 
-## Example output
+Your enterprise customer just sent a 150-question security questionnaire. *"Do you log personal data?" "List your sub-processors." "How long do you retain user data?"* Someone has to answer, usually the CTO, usually from memory.
+
+And India's **DPDP Act** makes every enterprise and bank liable for its vendors, with core obligations enforceable from **13 May 2027**. Expect DPDP clauses and questionnaires in every renewal.
+
+trustdiff reads your code and tells you what's *actually* true, so your answers are backed by evidence and your gaps get fixed before a customer finds them.
+
+## What it checks
+
+| Check | Example | Maps to |
+|---|---|---|
+| **Personal-data map** | email, phone, Aadhaar/PAN, bank/UPI, health, location, minors… and where each is *stored* | GDPR Art. 30 · DPDP s.5 |
+| **PII in logs** | `console.log(\`OTP for ${email}\`)` | GDPR Art. 32 · DPDP Rule 6 |
+| **PII sent to third parties** | raw email to Mixpanel, Aadhaar to an LLM | GDPR Art. 28 · DPDP s.8(2) |
+| **Sub-processor register** | analytics, monitoring, email, SMS, payments, LLMs, cloud | GDPR Art. 28 |
+| **Committed secrets** | AWS, Stripe, Razorpay, OpenAI, GitHub, DB URLs (masked in report) | GDPR Art. 32 · DPDP Rule 6 |
+| **No deletion / retention** | stored PII with no erasure path | GDPR Art. 17 · DPDP Rule 8 |
+| **Unhashed passwords / unencrypted sensitive fields** | PAN, bank account, salary in plain columns | GDPR Art. 32 · DPDP Rule 6 |
+| **Tracking without consent** | analytics SDK, no consent logic | GDPR Art. 6/7 · DPDP s.6 |
+| **Breach readiness** | no logging/monitoring → can't report in 72h | GDPR Art. 33 · DPDP Rule 7 |
+| **Children's data · cross-border transfers** | age/guardian fields · data leaving India | DPDP s.9, s.16 |
+
+The report also drafts answers to common **security-questionnaire questions**, each tagged `code` / `ops` / `policy` / `certification`, so you know which ones code can answer and which need a human.
+
+## Usage
+
+```bash
+npx trustdiff-cli scan [path] [options]
+
+  --frameworks gdpr,dpdp   frameworks to map findings to (default: both)
+  --out <file.md>          Markdown report (default: trustdiff-report.md)
+  --json <file>            also write JSON
+  --ci                     exit 1 on any high-severity finding (for CI)
 ```
-✔ 1046 files · 11 personal-data categories · 6 sub-processors
-  MEDIUM Personal data written to logs (Email)      server/mail/mailer.ts:269
-  MEDIUM Sensitive data stored, verify field-level encryption (PAN, bank, salary)
-  LOW    Local/dev DB password in code              docker-compose.yml:5
-```
-Full sample: [`examples/sample-report.md`](examples/sample-report.md)
 
-## Need a questionnaire answered?
-We run 72-hour security questionnaire + DPDP readiness sprints for Indian SaaS teams. Contact: unnati.guptaaaaa@gmail.com
+Supports JS/TS, Python, Prisma, SQL, plus `package.json` / `requirements.txt`. Sample report: [`examples/sample-report.md`](examples/sample-report.md) · try it: `npm run demo`.
 
-## Limits (be honest with customers)
-Heuristic static scan for JS/TS/Python/Prisma/SQL. Expect false positives and misses. It produces **evidence for review**, not a compliance certification, and its references are not legal advice. Ops, policy and certification questions still need a human.
+## What it is not
+
+A heuristic static scan. It produces **evidence for review, not a compliance certification**, and the GDPR/DPDP references are pointers for your counsel, not legal advice. Expect some false positives and misses. Ops, policy and certification questions still need a human.
+
+## Roadmap
+
+- [ ] GitHub Action (scan every PR)
+- [ ] Suggested fixes as patches (with your approval)
+- [ ] More languages (Go, Java, Ruby)
+- [ ] Questionnaire import: map a customer's actual questionnaire to findings
+
+## Need a questionnaire answered this week?
+
+We run **72-hour security questionnaire + DPDP readiness sprints** for Indian SaaS teams: your real questionnaire, answered with evidence from your code.
+→ **unnati.guptaaaaa@gmail.com**
+
+Found a false positive? [Open an issue](https://github.com/UnnatiGupta0/trustdiff/issues). That's the fastest way to make the scanner better.
+
+MIT © BeyondShell Technologies

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="346" viewBox="0 0 760 346">
+<rect width="760" height="346" rx="10" fill="#0d1117"/>
+<circle cx="22" cy="20" r="6" fill="#ff5f56"/><circle cx="42" cy="20" r="6" fill="#ffbd2e"/><circle cx="62" cy="20" r="6" fill="#27c93f"/>
+<g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5">
+<text x="20" y="56" fill="#e6edf3" xml:space="preserve">$ npx trustdiff-cli scan . --frameworks gdpr,dpdp</text>
+<text x="20" y="78" fill="#8b949e" xml:space="preserve">Indexing repository · mapping personal-data flows</text>
+<text x="20" y="100" fill="#3fb950" xml:space="preserve">✔ 1,046 files · 11 personal-data categories · 6 sub-processors</text>
+<text x="20" y="144" fill="#f85149" xml:space="preserve">  HIGH    Personal data sent to a third-party SDK (Government ID)</text>
+<text x="20" y="166" fill="#8b949e" xml:space="preserve">          src/kyc.py:6</text>
+<text x="20" y="188" fill="#f85149" xml:space="preserve">  HIGH    No deletion / retention logic found for stored personal data</text>
+<text x="20" y="210" fill="#d29922" xml:space="preserve">  MEDIUM  Personal data written to logs (Email, Phone)</text>
+<text x="20" y="232" fill="#8b949e" xml:space="preserve">          src/server.js:15</text>
+<text x="20" y="254" fill="#d29922" xml:space="preserve">  MEDIUM  Analytics SDKs present but no consent handling found</text>
+<text x="20" y="276" fill="#58a6ff" xml:space="preserve">  INFO    5 likely sub-processors: Mixpanel, Sentry, SendGrid, Razorpay, OpenAI</text>
+<text x="20" y="320" fill="#e6edf3" xml:space="preserve">6 high · 6 medium · 2 info   Report → trustdiff-report.md</text>
+</g></svg>

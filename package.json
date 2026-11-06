@@ -1,6 +1,6 @@
 {
   "name": "trustdiff-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Map personal data in your codebase and flag GDPR / DPDP gaps. Runs locally, zero dependencies.",
   "bin": {
     "trustdiff": "bin/trustdiff.js"
@@ -8,6 +8,7 @@
   "files": [
     "bin",
     "src",
+    "docs",
     "README.md",
     "LICENSE"
   ],
@@ -29,7 +30,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/UnnatiGupta0/trustdiff.git"
+    "url": "git+https://github.com/UnnatiGupta0/trustdiff.git"
   },
   "homepage": "https://github.com/UnnatiGupta0/trustdiff"
 }
