@@ -1,0 +1,35 @@
+{
+  "name": "trustdiff-cli",
+  "version": "1.0.0",
+  "description": "Map personal data in your codebase and flag GDPR / DPDP gaps. Runs locally, zero dependencies.",
+  "bin": {
+    "trustdiff": "bin/trustdiff.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "demo": "node bin/trustdiff.js scan examples/sample-app --out examples/sample-report.md --json examples/sample-report.json"
+  },
+  "keywords": [
+    "gdpr",
+    "dpdp",
+    "privacy",
+    "compliance",
+    "security-questionnaire",
+    "pii",
+    "scanner"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/UnnatiGupta0/Trustdiff-.git"
+  },
+  "homepage": "https://github.com/UnnatiGupta0/Trustdiff-"
+}

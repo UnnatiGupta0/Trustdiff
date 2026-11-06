@@ -1,0 +1,20 @@
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  phoneNumber String?
+  fullName    String
+  password    String
+  dateOfBirth DateTime?
+  aadhaarNumber String?
+  panNumber   String?
+  gender      String?
+  address     String?
+  createdAt   DateTime @default(now())
+}
+model Payout {
+  id            String @id
+  userId        String
+  bankAccountNumber String
+  ifscCode      String
+  upiId         String?
+}

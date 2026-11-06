@@ -1,0 +1,4 @@
+node_modules/
+trustdiff-report.md
+*.report.json
+.DS_Store

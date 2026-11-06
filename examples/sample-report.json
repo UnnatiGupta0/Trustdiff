@@ -1,0 +1,357 @@
+{
+  "tool": "trustdiff",
+  "version": "1.0.0",
+  "scannedAt": "2026-11-06T09:24:20.087Z",
+  "root": "/home/claude/trustdiff/examples/sample-app",
+  "frameworks": [
+    "gdpr",
+    "dpdp"
+  ],
+  "stats": {
+    "files": 4,
+    "lines": 50
+  },
+  "inventory": {
+    "email": {
+      "label": "Email",
+      "stored": [
+        "prisma/schema.prisma",
+        "src/server.js"
+      ],
+      "seenIn": 3,
+      "fields": [
+        "email"
+      ]
+    },
+    "phone": {
+      "label": "Phone",
+      "stored": [
+        "prisma/schema.prisma",
+        "src/server.js"
+      ],
+      "seenIn": 2,
+      "fields": [
+        "phoneNumber",
+        "phone"
+      ]
+    },
+    "name": {
+      "label": "Name",
+      "stored": [
+        "prisma/schema.prisma"
+      ],
+      "seenIn": 1,
+      "fields": [
+        "fullName"
+      ]
+    },
+    "credential": {
+      "label": "Credentials (password/OTP)",
+      "stored": [
+        "prisma/schema.prisma",
+        "src/server.js"
+      ],
+      "seenIn": 2,
+      "fields": [
+        "password"
+      ]
+    },
+    "dob": {
+      "label": "Date of birth / age",
+      "stored": [
+        "prisma/schema.prisma"
+      ],
+      "seenIn": 1,
+      "fields": [
+        "dateOfBirth"
+      ]
+    },
+    "govid": {
+      "label": "Government ID (Aadhaar/PAN/passport/SSN)",
+      "stored": [
+        "prisma/schema.prisma",
+        "src/kyc.py",
+        "src/server.js"
+      ],
+      "seenIn": 3,
+      "fields": [
+        "aadhaarNumber",
+        "panNumber",
+        "pan_number",
+        "aadhaar_number"
+      ]
+    },
+    "special": {
+      "label": "Special category (gender/religion/caste/ethnicity)",
+      "stored": [
+        "prisma/schema.prisma"
+      ],
+      "seenIn": 1,
+      "fields": [
+        "gender"
+      ]
+    },
+    "address": {
+      "label": "Postal address",
+      "stored": [
+        "prisma/schema.prisma"
+      ],
+      "seenIn": 1,
+      "fields": [
+        "address"
+      ]
+    },
+    "financial": {
+      "label": "Financial (bank/card/UPI/salary)",
+      "stored": [
+        "prisma/schema.prisma"
+      ],
+      "seenIn": 1,
+      "fields": [
+        "bankAccountNumber",
+        "ifscCode",
+        "upiId"
+      ]
+    }
+  },
+  "subprocessors": [
+    {
+      "package": "mixpanel",
+      "vendor": "Mixpanel",
+      "purpose": "Product analytics",
+      "region": "US/EU",
+      "files": [
+        "package.json",
+        "src/server.js"
+      ]
+    },
+    {
+      "package": "@sentry/node",
+      "vendor": "Sentry",
+      "purpose": "Error monitoring",
+      "region": "US/EU",
+      "files": [
+        "package.json"
+      ]
+    },
+    {
+      "package": "@sendgrid/mail",
+      "vendor": "SendGrid",
+      "purpose": "Email",
+      "region": "US",
+      "files": [
+        "package.json"
+      ]
+    },
+    {
+      "package": "razorpay",
+      "vendor": "Razorpay",
+      "purpose": "Payments",
+      "region": "IN",
+      "files": [
+        "package.json"
+      ]
+    },
+    {
+      "package": "openai",
+      "vendor": "OpenAI",
+      "purpose": "LLM processing",
+      "region": "US",
+      "files": [
+        "package.json",
+        "src/kyc.py"
+      ]
+    }
+  ],
+  "signals": {
+    "erasureLogic": [],
+    "passwordHashing": false,
+    "encryption": false,
+    "consentHandling": false,
+    "monitoring": true
+  },
+  "findings": [
+    {
+      "type": "pii_in_logs",
+      "severity": "high",
+      "where": "src/kyc.py:5",
+      "title": "Personal data written to logs (Government ID (Aadhaar/PAN/passport/SSN), Email)",
+      "detail": "logging.info(f\"KYC for {user.pan_number} {user.email}\")",
+      "fix": "Remove the field from the log line or mask it (e.g. a***@x.com); add a log redaction filter.",
+      "category": "code",
+      "refs": {
+        "gdpr": "Art. 5(1)(c), Art. 32",
+        "dpdp": "s.8(5) + Rule 6 (reasonable security safeguards)"
+      }
+    },
+    {
+      "type": "pii_to_third_party",
+      "severity": "high",
+      "where": "src/kyc.py:6",
+      "title": "Personal data sent to a third-party SDK (Government ID (Aadhaar/PAN/passport/SSN))",
+      "detail": "return openai.chat.completions.create(model=\"gpt-4o\", messages=[{\"role\":\"user\",\"content\": user.aadhaar_number}])",
+      "fix": "Send a pseudonymous ID instead of raw identifiers; list this vendor as a sub-processor with a DPA; gate it behind consent.",
+      "category": "code",
+      "refs": {
+        "gdpr": "Art. 28 (processors), Art. 44 (transfers)",
+        "dpdp": "s.8(2) + Rule 6 (processor under contract)"
+      }
+    },
+    {
+      "type": "secret",
+      "severity": "high",
+      "where": "src/server.js:6",
+      "title": "Hardcoded secret committed in code",
+      "detail": "Value: JWT_…2\" (43 chars)",
+      "fix": "Rotate the credential now, move it to a secret manager / env var, and purge it from git history.",
+      "category": "code",
+      "refs": {
+        "gdpr": "Art. 32",
+        "dpdp": "s.8(5) + Rule 6"
+      }
+    },
+    {
+      "type": "no_retention",
+      "severity": "high",
+      "where": "(repo)",
+      "title": "No deletion / retention logic found for stored personal data",
+      "detail": "Stored: Email, Phone, Name, Credentials (password/OTP), Date of birth / age, Government ID (Aadhaar/PAN/passport/SSN), Special category (gender/religion/caste/ethnicity), Postal address, Financial (bank/card/UPI/salary)",
+      "fix": "Add an account/data deletion path (incl. backups), a retention period per data type, and a scheduled purge job. DPDP also needs a 48h notice before erasure.",
+      "category": "code",
+      "refs": {
+        "gdpr": "Art. 5(1)(e), Art. 17",
+        "dpdp": "s.8(7) + Rule 8 (erasure; 48h prior notice)"
+      }
+    },
+    {
+      "type": "unhashed_password",
+      "severity": "high",
+      "where": "prisma/schema.prisma, src/server.js",
+      "title": "Passwords appear to be stored with no hashing library in the repo",
+      "detail": "No bcrypt/argon2/scrypt/pbkdf2 usage found.",
+      "fix": "Hash passwords with argon2id or bcrypt; never store or log plaintext.",
+      "category": "code",
+      "refs": {
+        "gdpr": "Art. 32(1)(a)",
+        "dpdp": "Rule 6 (encryption/obfuscation/masking)"
+      }
+    },
+    {
+      "type": "unencrypted_sensitive",
+      "severity": "high",
+      "where": "prisma/schema.prisma, src/kyc.py, src/server.js",
+      "title": "Sensitive data stored with no encryption found in code (Government ID (Aadhaar/PAN/passport/SSN), Special category (gender/religion/caste/ethnicity), Financial (bank/card/UPI/salary))",
+      "detail": "No encryption/KMS usage found.",
+      "fix": "Encrypt these fields at rest (app-level or KMS), mask them in UIs/exports, and limit access.",
+      "category": "code",
+      "refs": {
+        "gdpr": "Art. 9, Art. 32(1)(a)",
+        "dpdp": "Rule 6 (encryption/obfuscation/masking)"
+      }
+    },
+    {
+      "type": "pii_in_logs",
+      "severity": "medium",
+      "where": "src/server.js:11",
+      "title": "Personal data written to logs (raw request/user object)",
+      "detail": "console.log('signup payload', req.body);",
+      "fix": "Remove the field from the log line or mask it (e.g. a***@x.com); add a log redaction filter.",
+      "category": "code",
+      "refs": {
+        "gdpr": "Art. 5(1)(c), Art. 32",
+        "dpdp": "s.8(5) + Rule 6 (reasonable security safeguards)"
+      }
+    },
+    {
+      "type": "pii_to_third_party",
+      "severity": "medium",
+      "where": "src/server.js:14",
+      "title": "Personal data sent to a third-party SDK (Email, Phone)",
+      "detail": "mixpanel.people.set(user.id, { $email: email, phone: phoneNumber });",
+      "fix": "Send a pseudonymous ID instead of raw identifiers; list this vendor as a sub-processor with a DPA; gate it behind consent.",
+      "category": "code",
+      "refs": {
+        "gdpr": "Art. 28 (processors), Art. 44 (transfers)",
+        "dpdp": "s.8(2) + Rule 6 (processor under contract)"
+      }
+    },
+    {
+      "type": "pii_in_logs",
+      "severity": "medium",
+      "where": "src/server.js:15",
+      "title": "Personal data written to logs (Email, Phone)",
+      "detail": "console.log(`new user ${email} ${phoneNumber}`);",
+      "fix": "Remove the field from the log line or mask it (e.g. a***@x.com); add a log redaction filter.",
+      "category": "code",
+      "refs": {
+        "gdpr": "Art. 5(1)(c), Art. 32",
+        "dpdp": "s.8(5) + Rule 6 (reasonable security safeguards)"
+      }
+    },
+    {
+      "type": "special",
+      "severity": "medium",
+      "where": "prisma/schema.prisma",
+      "title": "Special-category data collected (gender/religion/caste/ethnicity)",
+      "detail": "Collect only if strictly needed for the purpose.",
+      "fix": "Remove if not essential; otherwise document the purpose and lawful basis.",
+      "category": "policy",
+      "refs": {
+        "gdpr": "Art. 9 (special categories)",
+        "dpdp": "s.8(5) (higher-risk data, safeguard accordingly)"
+      }
+    },
+    {
+      "type": "children",
+      "severity": "medium",
+      "where": "prisma/schema.prisma",
+      "title": "Age / minor markers stored, check children's-data handling",
+      "detail": "DPDP treats under-18s as children.",
+      "fix": "If any users can be under 18: add age-gating + verifiable parental consent; no tracking/targeted ads for minors.",
+      "category": "ops",
+      "refs": {
+        "gdpr": "Art. 8",
+        "dpdp": "s.9 + Rule 10 (verifiable parental consent)"
+      }
+    },
+    {
+      "type": "no_consent",
+      "severity": "medium",
+      "where": "(repo)",
+      "title": "Analytics/tracking SDKs present but no consent handling found",
+      "detail": "Mixpanel",
+      "fix": "Load tracking only after consent; record consent (who, when, what notice version) and honour withdrawal.",
+      "category": "code",
+      "refs": {
+        "gdpr": "Art. 6, Art. 7 (+ ePrivacy)",
+        "dpdp": "s.6 (consent), s.5 (notice)"
+      }
+    },
+    {
+      "type": "subprocessor",
+      "severity": "info",
+      "where": "(repo)",
+      "title": "5 likely sub-processors detected",
+      "detail": "Mixpanel, Sentry, SendGrid, Razorpay, OpenAI",
+      "fix": "Put each in your sub-processor register with a signed DPA; disclose them to customers.",
+      "category": "policy",
+      "refs": {
+        "gdpr": "Art. 28",
+        "dpdp": "s.8(2) (processor only under valid contract)"
+      }
+    },
+    {
+      "type": "cross_border",
+      "severity": "info",
+      "where": "(repo)",
+      "title": "Personal data likely leaves India",
+      "detail": "Mixpanel (US/EU), Sentry (US/EU), SendGrid (US), OpenAI (US), us-east-1 (src/server.js)",
+      "fix": "Document transfer destinations; check against any DPDP restricted-country list and your customers' data-residency terms.",
+      "category": "policy",
+      "refs": {
+        "gdpr": "Ch. V (Art. 44-49)",
+        "dpdp": "s.16 (+ Rule 15)"
+      }
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+{ "name": "sample-app", "dependencies": { "express": "^4", "@prisma/client": "^5", "mixpanel": "^0.18", "@sentry/node": "^8", "@sendgrid/mail": "^8", "razorpay": "^2", "openai": "^4" } }
