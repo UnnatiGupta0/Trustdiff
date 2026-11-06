@@ -4,7 +4,7 @@
 <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5">
 <text x="20" y="56" fill="#e6edf3" xml:space="preserve">$ npx trustdiff-cli scan . --frameworks gdpr,dpdp</text>
 <text x="20" y="78" fill="#8b949e" xml:space="preserve">Indexing repository · mapping personal-data flows</text>
-<text x="20" y="100" fill="#3fb950" xml:space="preserve">✔ 1,046 files · 11 personal-data categories · 6 sub-processors</text>
+<text x="20" y="100" fill="#3fb950" xml:space="preserve">✔ 4 files · 9 personal-data categories · 5 sub-processors</text>
 <text x="20" y="144" fill="#f85149" xml:space="preserve">  HIGH    Personal data sent to a third-party SDK (Government ID)</text>
 <text x="20" y="166" fill="#8b949e" xml:space="preserve">          src/kyc.py:6</text>
 <text x="20" y="188" fill="#f85149" xml:space="preserve">  HIGH    No deletion / retention logic found for stored personal data</text>
